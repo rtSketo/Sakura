@@ -1,0 +1,387 @@
+<html>
+<meta charset="UTF-8">
+
+<head>
+    <title>Sakura Frontier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.2, maximum-scale=1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        var proxyJsonp = "https://script.google.com/macros/s/AKfycbwmqG55tt2d2FcT_WQ3WjCSKmtyFpkOcdprSITn45-4UgVJnzp9/exec";
+        jQuery.ajaxOrig = jQuery.ajax;
+        jQuery.ajax = function (a, b) {
+            function d(a) {
+                a = encodeURI(a).replace(/&/g, "%26");
+                return proxyJsonp + "?url=" + a + "&callback=?"
+            }
+            var c = "object" === typeof a ? a : b || {};
+            c.url = c.url || ("string" === typeof a ? a : "");
+            var c = jQuery.ajaxSetup({}, c)
+                , e = function (a, c) {
+                    var b = document.createElement("a");
+                    b.href = a;
+                    return c.crossOrigin && "http" == a.substr(0, 4).toLowerCase() && "localhost" != b.hostname && "127.0.0.1" != b.hostname && b.hostname != window.location.hostname
+                }(c.url, c);
+            c.proxy && 0 < c.proxy.length && (proxyJsonp = c.proxy, "object" === typeof a ? a.crossDomain = !0 : "object" === typeof b && (b.crossDomain = !0));
+            e && ("object" === typeof a ? a.url && (a.url = d(a.url), a.charset && (a.url += "&charset=" + a.charset), a.dataType = "json") : "string" === typeof a && "object" === typeof b && (a = d(a), b.charset && (a += "&charset=" + b.charset), b.dataType = "json"));
+            return jQuery.ajaxOrig.apply(this, arguments)
+        };
+        jQuery.ajax.prototype = new jQuery.ajaxOrig;
+        jQuery.ajax.prototype.constructor = jQuery.ajax;
+    </script>
+</head>
+
+<body>
+    <div class="navbar navbar-inverse navbar-fixedtop">
+        <div class="container"><div class="row">
+            <div class="col-xs-6 clana text-left align-middle">Sakura Frontier</div>
+            <div class="col-xs-4 switch text-right align-middle"></div>
+            <div class="col-xs-2 text-right"><img class="logo" src="nav.png"></div></div></div></div>
+    <div class="container">
+        <div class="whatnow alert-success text-left" style="padding-left: 5px"></div>
+        <table class="table table-striped">
+            <thead> </thead>
+            <tbody> </tbody>
+        </table>
+    </div>
+    <div class="hidde"> </div>
+</body>
+<script>
+    window.members = [];
+    window.memtags = [];
+    window.memclan = [];
+    window.memlegs = [];
+    window.memsmcs = [];
+    window.memlvls = [];
+    window.memtopc = [];
+    window.memtopn = [];
+    window.memhist = [];
+    window.memacti = [];
+    window.memtime = 250;
+    window.memshor = false;
+//    $(".whatnow").text("Estimated Time: " + memtime + "sec... " + "Refreshing Clan...");
+    $.ajax({
+        crossOrigin: true
+        , proxy: "proxy.php"
+        , url: "http://statsroyale.com/clan/2YCJRUC/refresh"
+        , success: function () {}
+    });
+    $.ajax({
+        crossOrigin: true
+        , proxy: "proxy.php"
+        , url: "http://statsroyale.com/clan/209LRG2P/refresh"
+        , success: function () {}
+    });
+    $.ajax({
+        crossOrigin: true
+        , proxy: "proxy.php"
+        , url: "http://statsroyale.com/clan/2YCJRUC"
+        , success: function (data) {
+            var i = 0;
+            $(data).find('.ui__blueLink').each(function () {
+                members[i] = $(this).text();
+                memtags[i] = $(this).attr("href").replace("http://statsroyale.com","");
+                memhist[i] = memtags[i].replace("profile","matches");
+                memclan[i] = 1;
+                                
+                console.log(members[i]);
+                console.log(memtags[i]);
+                console.log(memhist[i]);
+                console.log(memclan[i]);
+                i++;
+            });
+            $.ajax({
+                crossOrigin: true
+                , proxy: "proxy.php"
+                , url: "http://statsroyale.com/clan/209LRG2P"
+                , success: function (data) {
+                    $(data).find('.ui__blueLink').each(function () {
+                        members[i] = $(this).text();
+                        memtags[i] = $(this).attr("href").replace("http://statsroyale.com","");
+                        memhist[i] = memtags[i].replace("profile","matches");
+                        memclan[i] = 1;
+               
+                        console.log(members[i]);
+                        console.log(memtags[i]);
+                        console.log(memhist[i]);
+                        console.log(memclan[i]);
+                        i++;
+                    });
+                    refreshMember(members.length - 1);
+                }
+            });
+        }
+    });
+    setTimeout(displayTimer, 1000);
+
+    function displayTimer() {
+        if (memtime > 1) {
+            memtime--;
+            setTimeout(displayTimer, 1000);
+            //            $(".whatnow").text("Estimated Time: " + memtime + "sec... ");
+        }
+    }
+
+    function displayMembers(activity) {
+        $(".whatnow").text("Sorting Players...");
+        if (!memshor) {
+            memshor = true;
+            for (var i = 0; i <= members.length; i++) {
+                memtopc[i] = 9000;
+                memtopn[i] = i;
+            }
+            if (activity) {
+                for (var i = 0; i < members.length; i++) {
+                    for (var c = members.length - 1; c >= 0; c--) {
+                        if (memtopc[c] >= memacti[i]) {
+                            memtopc[c + 1] = memtopc[c];
+                            memtopc[c] = memacti[i];
+                            memtopn[c + 1] = memtopn[c];
+                            memtopn[c] = i;
+                        }
+                    }
+                }
+            } else {
+                for (var i = 0; i < members.length; i++) {
+                    for (var c = members.length - 1; c >= 0; c--) {
+                        if (memtopc[c] >= parseInt(memlegs[i])) {
+                            memtopc[c + 1] = memtopc[c];
+                            memtopc[c] = memlegs[i];
+                            memtopn[c + 1] = memtopn[c];
+                            memtopn[c] = i;
+                        }
+                        else if (memtopc[c] >= parseInt(memsmcs[i])) {
+                            memtopc[c + 1] = memtopc[c];
+                            memtopc[c] = memsmcs[i];
+                            memtopn[c + 1] = memtopn[c];
+                            memtopn[c] = i;
+                        }
+                    }
+                }
+            }
+            $(".switch").html("<button class=\"btn-sm btn-danger\" onclick=\"displayMembers("+!activity+")\"> Switch Shorting </button>");
+            $('thead').html("<tr><th>Place</th><th>Clan</th><th>Member</th><th>SMC</th><th>Legendary</th><th>Activity</th></tr>");
+            $('tbody').html("");
+            for (var c = members.length - 1; c >= 0; c--) setTimeout(displayMember, 150 * (members.length - c), c);
+        }
+    }
+
+    function displayMember(c) {
+        $(".whatnow").text("Sorting Players... " + String(Math.round((members.length - c) / (members.length) * 100)) + "%");
+        var i = memtopn[c];
+        $('tbody').prepend("<tr><td class=\"memnum" + c + "\"></td><td class=\"memclan" + c + "\"></td><td class=\"member" + c + "\"></td><td class=\"memsmc" + c + "\"></td><td class=\"memleg" + c + "\"></td><td class=\"memact" + c + "\"></td></tr>");
+        $(".memclan" + c).html("<img class=\"clanlogo\" src=\"http://statsroyale.com" + memclan[i] + "\">");
+        $(".memnum" + c).text(String(c + 1));
+        $(".member" + c).text(members[i]);
+        $(".memleg" + c).html("<span style=\"color: rgb("+Math.max(160-Math.round(parseInt(memlegs[i])/2),0)+",0,"+Math.max(110-Math.round(parseInt(memlegs[i])/2),0)+")\">"+memlegs[i]+"</span>");
+        $(".memsmc" + c).html("<span style=\"color: rgb("+Math.max(160-Math.round(parseInt(memsmcs[i])/2),0)+",0,"+Math.max(110-Math.round(parseInt(memsmcs[i])/2),0)+")\">"+memsmcs[i]+"</span>");
+        var acti;
+        if (memacti[i] == 0) memacti[i] = 9000;
+        if (memacti[i] > 720) acti = "00%";
+        else {
+            acti = Math.round(Math.max(((1 - memacti[i]/720)*100),0));
+            if (acti < 10) acti = "0" + acti;
+            acti = acti + "%";
+        }
+        $(".memact" + c).html("<span style=\"color: rgb("+(110-parseInt(acti))+",0,"+(160-parseInt(acti))+")\">"+acti+"</span>");
+        highlight(c);
+        if (c == 0) {
+            $(".whatnow").text("");
+            memshor = false;
+        }
+    }
+
+    function refreshMember(i) {
+        $(".whatnow").text("Refreshing Players... " + String(Math.round((members.length - i) / (members.length) * 100)) + "%");
+        $.ajax({
+            crossOrigin: true
+            , proxy: "proxy.php"
+            , url: "http://statsroyale.com" + memtags[i] + "/refresh"
+            , success: function (data) {
+                if (i % 3 == 2) $('tbody').prepend("<tr><td class=\"tag" + String(i) + "\"></td><td class=\"tag" + String(i - 1) + "\"></td><td class=\"tag" + String(i - 2) + "\"></td></tr>");
+                $(".tag" + i).text(members[i]);
+                $(".tag" + i).addClass("mark");
+                if (i - 1 >= 0) refreshMember(i - 1);
+                else setTimeout(scanMember,2000,members.length - 1);
+            }
+        });
+    }
+
+    function scanMember(i) {
+        if (i==members.length-1) {
+            $('thead').html("<tr><th>Level</th><th>Clan</th><th>Member</th><th>SMC</th><th>Legendary</th><th>Activity</th></tr>");
+            $('tbody').html("");
+        }
+        $(".whatnow").text("Scanning Players... " + String(Math.round((members.length - i) / (members.length) * 100)) + "%");
+        $.ajax({
+            crossOrigin: true
+            , proxy: "proxy.php"
+            , url: "http://statsroyale.com" + memtags[i], //+"/refresh" ,
+            success: function (data) {
+                memlvls[i] = $(data).find('.profileHeader__userLevel').text();
+                memclan[i] = $(data).find('.profileHeader__userClan').find('img').attr("src");
+                memlegs[i] = $(data).find('.chests__legendary').find('.chests__counter').text();
+                memsmcs[i] = $(data).find('.chests__super').find('.chests__counter').text();
+                if ($(data).find('.chests__legendary').find('.chests__counter').text() == "") memlegs[i] = "+1337";
+                if (memlegs[i] == "Next") memlegs[i] = "+1";
+                if (memsmcs[i] == "Next") memlegs[i] = "+1";
+                
+                               
+                $.ajax({
+                    crossOrigin: true
+                    , proxy: "proxy.php"
+                    , url: "http://statsroyale.com" + memhist[i]
+                    , success: function (data) {
+                        memacti[i] = 0;
+                        var games = 0;
+                        $(data).find('.replay__date').each(function () {
+                            var hours = 0;
+                            var text = $(this).text();
+//                            console.log("zxdd Check: " + text.match(/\d+ days? ago/i));
+//                            if (text.match(/\d+ days? ago/i) != null) console.log("zxdd Number: " + (text.match(/\d+ days? ago/i)[0]).match(/\d+/i));
+//                            console.log("zxdd Text: " + text);
+                            if (text.match(/\d+ minutes? ago/i) != null) {
+                                text = text.match(/\d+ minutes? ago/i)[0];
+                                text = text.match(/\d+/i)[0];
+                                hours = hours + 1;
+                            } else if (text.match(/\d+ hours? ago/i) != null) {
+                                text = text.match(/\d+ hours? ago/i)[0];
+                                text = text.match(/\d+/i)[0];
+                                hours = hours + parseInt(text);
+                            } else if (text.match(/\d+ days? ago/i) != null) {
+                                text = text.match(/\d+ days? ago/i)[0];
+                                text = text.match(/\d+/i)[0];
+                                hours = hours + 24*parseInt(text);
+                            } else if (text.match(/\d+ weeks? ago/i) != null) {
+                                text = text.match(/\d+ weeks? ago/i)[0];
+                                text = text.match(/\d+/i)[0];
+                                hours = hours + 7*24*parseInt(text);
+                            } else if (text.match(/\d+ months? ago/i) != null) {
+                                text = text.match(/\d+ months? ago/i)[0];
+                                text = text.match(/\d+/i)[0];
+                                hours = hours + 30*24*parseInt(text);
+                            } else console.log("What's going on? " + $(this).text());
+                            games += 1;
+                            memacti[i] += hours;
+                        });
+
+                        
+                        $('tbody').prepend("<tr><td class=\"memnum" + i + "\"></td><td class=\"memclan" + i + "\"></td><td class=\"member" + i + "\"></td><td class=\"memsmc" + i + "\"></td><td class=\"memleg" + i + "\"></td><td class=\"memact" + i + "\"></td></tr>");
+                        $(".memclan" + i).html("<img class=\"clanlogo\" src=\"http://statsroyale.com" + memclan[i] + "\">");
+                        $(".memnum" + i).text(memlvls[i]);
+                        $(".member" + i).text(members[i]);
+                        $(".memleg" + i).html("<span style=\"color: rgb("+Math.max(160-Math.round(parseInt(memlegs[i])/2),0)+",0,"+Math.max(110-Math.round(parseInt(memlegs[i])/2),0)+")\">"+memlegs[i]+"</span>");
+                        $(".memsmc" + i).html("<span style=\"color: rgb("+Math.max(160-Math.round(parseInt(memsmcs[i])/2),0)+",0,"+Math.max(110-Math.round(parseInt(memsmcs[i])/2),0)+")\">"+memsmcs[i]+"</span>");
+                        if (games == 0) games = 1;
+                        memacti[i] = Math.round(memacti[i] / games);
+                        $(".memact" + i).text(memacti[i]);
+                        
+                        highlight(i);
+                        if (i - 1 < 0) setTimeout(function(){displayMembers(false)}, 2000);
+                        else scanMember(i - 1);
+                    }
+                });                
+            }
+        });
+    }
+
+    function highlight(x) {
+        $(".memclan" + x).addClass("mark");
+        $(".memnum" + x).addClass("mark");
+        $(".member" + x).addClass("mark");
+        $(".memleg" + x).addClass("mark");
+        $(".memsmc" + x).addClass("mark");
+        $(".memact" + x).addClass("mark");
+    }
+</script>
+<style>
+    .mark {
+        animation: blink 2s;
+        background-color: inherit;
+    }
+    
+    @keyframes blink {
+        0% {
+            background-color: azure;
+            opacity: 0;
+        }
+        25% {
+            background-color: #d9edf7;
+            opacity: 100%;
+        }
+        100% {
+            background-color: inherit;
+        }
+    }
+    
+    @media all and (min-width: 960px) {
+        .clanlogo {
+            max-height: 30px;
+        }
+        .whatnow {
+            font-size: 18px;
+        }
+        th {
+            font-size: 20px;
+        }
+        td {
+            font-size: 24px;
+        }
+        .clana {
+            font-size: 28px;
+        }
+    }
+    
+    @media all and (max-width: 959px) and (min-width: 50px) {
+        .clanlogo {
+            max-height: 3.8vw;
+        }
+        .whatnow {
+            font-size: 2.6vw;
+        }
+        th {
+            font-size: 2.8vw;
+        }
+        td {
+            font-size: 3.0vw;
+        }
+        .clana {
+            font-size: 3.8vw;
+        }
+    }
+    
+    .clanlogo {
+        vertical-align: middle;
+    }
+    
+    th {
+        vertical-align: middle;
+        text-decoration-style: wavy;
+        font-variant: small-caps;
+        font-weight: bold;
+    }
+    
+    td {
+        vertical-align: middle;
+        text-decoration-style: wavy;
+        font-variant: small-caps;
+        font-weight: bold;
+    }
+    .logo {
+        display: inline-block;
+        max-height: 50px;
+    }
+    .navbar {
+        background-color: black;
+    }
+    .clana {
+        line-height: 50px;
+        display: inline-block;
+        vertical-align: middle;
+        font-variant: small-caps;
+        font-weight: 900;
+        color:aliceblue;
+    }
+</style>
+
+</html>
