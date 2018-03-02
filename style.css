@@ -278,4 +278,8 @@
         hoy {
             color: #f5d2c0;
         }
+
+tr.deleted * {
+    color:gray !important;
+}
     </style>

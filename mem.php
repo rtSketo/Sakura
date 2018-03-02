@@ -1,13 +1,15 @@
 <?php
 $db = new SQLite3('sakura.db');
 
-$results = $db->query('SELECT * FROM player ORDER BY name');
+$results = $db->query('SELECT * FROM player ORDER BY isin DESC, name');
             while ($row = $results->fetchArray(SQLITE3_ASSOC)) {
-                echo '<tr class="clickable-row" data-href="https://spy.deckshop.pro/player/'.str_replace('#','',$row['tag']).'">';
-                echo '<td>'.decode($row['name']).'</td>';
+                echo '<tr class="clickable-row ';
+                if($row['isin']==0) echo 'deleted';
+                echo '" data-href="https://spy.deckshop.pro/player/'.str_replace('#','',$row['tag']).'">';
+                echo '<td>'.decode($row['name']).'</td>'; 
                 echo '<td><center>';
-                if($row['role']>.6) echo '<ooy><small>Leader</small></ooy>';
-                elseif($row['role']>.5) echo '<hoy><small>Elder</small></hoy>';
+                if($row['role']>.75) echo '<ooy><small>Leader</small></ooy>';
+                elseif($row['role']>.55) echo '<hoy><small>Elder</small></hoy>';
                 else echo '<small>Member</small>';
                 echo '</center></td>';
                 echo '<td><center>'.round($row['chest']).'</center></td>';
