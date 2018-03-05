@@ -21,7 +21,8 @@
             </div>
         </div>
     </div>
-    <table class="container stato">
+    <div class="table-responsive">
+    <table class="container stato table-condensed">
         <thead>
             <tr>
                 <th>
@@ -71,6 +72,7 @@
             
         </tbody>
     </table>
+    </div>
 </body>
 <script>
     var yo = 0;
